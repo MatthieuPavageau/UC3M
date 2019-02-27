@@ -2,8 +2,8 @@
 
 int main()
 {
-    char key[255] = "key1";
-    char value1[255];
+    char key[256] = "key1";
+    char value1[256];
     float value2;
 
     init();

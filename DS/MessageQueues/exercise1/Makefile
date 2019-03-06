@@ -1,10 +1,13 @@
-all : client server keys.o
-client: client.c keys.o
-	gcc -Wall -o client  client.c keys.o -pthread -lrt
-server: server.c
-	gcc -Wall -o server server.c -pthread -lrt
-keys.o  : keys.c	
+all :  keys client server
+keys:
 	gcc -Wall -c keys.c -pthread -lrt
+	ar -rv libkeys.a keys.o
+client: keys
+	gcc -Wall -o client client.c libkeys.a -lrt
+server:
+	gcc -Wall -c TripletLinkedList.c -lrt
+	gcc -Wall -o server server.c -pthread -lrt
+
 clean :
 	rm -f client
 	rm -f server

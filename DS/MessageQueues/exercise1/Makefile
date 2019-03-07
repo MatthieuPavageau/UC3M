@@ -6,7 +6,7 @@ client: keys
 	gcc -Wall -o client client.c libkeys.a -lrt
 server:
 	gcc -Wall -c TripletLinkedList.c -lrt
-	gcc -Wall -o server server.c -pthread -lrt
+	gcc -Wall -o server server.c TripletLinkedList.o -pthread -lrt
 
 clean :
 	rm -f client

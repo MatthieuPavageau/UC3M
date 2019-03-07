@@ -127,6 +127,7 @@ int modify_value(char* key, char *value1, float *value2){
 
 int delete_key(char* key){
     Triplets triplet;
+    Answers answer;
 	
     triplet.op_code = 5;
 	strcpy(triplet.key, key);
@@ -140,6 +141,7 @@ int delete_key(char* key){
         printf("MESSAGE SENT FROM CLIENT TO SERVER (CLIENT SIDE_3)\n");
         printf("Delete done!\n");
     }
+    mq_receive(q_client, (char *) &answer, sizeof(Answers), 0);
 
     return 0;
 }

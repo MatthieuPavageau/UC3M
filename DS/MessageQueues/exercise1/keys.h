@@ -13,3 +13,5 @@
 int init();
 int set_value(char* key, char *value1, float  value2);
 int get_value(char* key, char *value1, float *value2);
+int num_items();
+int exist(char *key);

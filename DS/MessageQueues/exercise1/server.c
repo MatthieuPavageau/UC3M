@@ -48,6 +48,8 @@ void process_message(Triplets *triplets){
     mqd_t q_client;
     int result;
   	int length;
+  	int count;
+  	int exists;
 
     struct mq_attr q_attr;
 
@@ -95,7 +97,6 @@ void process_message(Triplets *triplets){
     					if (length == 0)
     					{
     						strcpy(arr_triplets[i].key , triplet.key);
-    						strcpy(arr_triplets[i].key , triplet.key);
     		 				strcpy(arr_triplets[i].value1 , triplet.value1);
     		 		 		arr_triplets[i].value2 = triplet.value2; 
     		 				strcpy(arr_triplets[i].q_name, triplet.q_name);
@@ -109,21 +110,18 @@ void process_message(Triplets *triplets){
     		 		{
     		 			printf("%s %s %f\n",arr_triplets[j].key, arr_triplets[j].value1, arr_triplets[j].value2 );
     		 		}
-    		 		
-    		 	
-    	
-    		
     		break;
 
     	case 3:
 
     		 for ( int i = 0; i < MAX_MESSAGES; ++i)
     		 {
+    		 	//if ()
     		 	if (strcmp(arr_triplets[i].key,triplet.key))
     		 	{
     		 				strcpy(triplet.key, arr_triplets[i].key);
-    						strcpy(triplet.value1, *arr_triplets[i].value1);
-    		 				//triplet.value2 = arr_triplets[i].value2;
+    						strcpy(triplet.value1, arr_triplets[i].value1);
+    		 				//&triplet.value2 = arr_triplets[i].value2;
     		 				break;
     		 	}
     		 }
@@ -154,11 +152,56 @@ void process_message(Triplets *triplets){
     	   	break;
 
     	case 6:
+    		
+    		for ( int i=0; i < MAX_MESSAGES ; ++i)
+    		{
+    			
+    			if (strcmp(arr_triplets[i].key,triplet.key) !=0)
+    			{
+    				printf("SSSSSSSSSSSSSS %s\n", triplet.key );
+    				printf("VVVVVVVVVVVVVV %s\n", arr_triplets[i].key );
+    				exists = 1;
+    				break;
+    			} else
+    			{
+    				exists = 0;
+    			}
 
+    		}
+    		  if((mq_send(q_client, (const char *) &exists, sizeof(int), 0)==-1))
+    		 {
+    		 	perror("6) mq_send\n");
+    		 	mq_close(q_client);
+    		 } else {
+    		 	//printf("");
+    		 	printf("%d\n", exists );
+    		 	printf("VALUE SENT FROM SERVER TO CLIENT\n");
+    		 }
+    		 mq_close(q_client);
+    		
     		break;
 
     	case 7:
+    	count = 0;
+    		for ( int i=0; i < MAX_MESSAGES ; ++i)
+    		{
+    			length = strlen(arr_triplets[i].key);
+    			if (length != 0)
+    			{
+    				count=count+1;
+    			}
 
+    		}
+
+    		  if((mq_send(q_client, (const char *) &count, sizeof(int), 0)==-1))
+    		 {
+    		 	perror("3) mq_send\n");
+    		 	mq_close(q_client);
+    		 } else {
+    		 	//printf("");
+    		 	printf("VALUE SENT FROM SERVER TO CLIENT\n");
+    		 }
+    		 mq_close(q_client);
     		break;
     	default:
     		printf("INVALID INPUT\n");

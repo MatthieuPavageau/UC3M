@@ -35,7 +35,7 @@ int main()
     case 2: { 
         printf("You've chosen option 2\n");
         int n;
-                char k[100],b[100];
+        char k[100],b[100];
         float z;
         printf("Enter how many triplets you want to send to server : \n");
         scanf("%d", &n);
@@ -68,11 +68,14 @@ int main()
         break; 
     } 
     case 6: { 
-        //exist();
+        char k[100];
+        printf("Enter key :\n");
+        scanf("%99s", k);
+        exist(k);
         break; 
     } 
     case 7: { 
-        //num_items();
+        num_items();
         break; 
     } 
     default: 

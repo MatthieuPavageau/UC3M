@@ -25,7 +25,8 @@ struct mq_attr attributes_s,attributes_c;
 int init()
 {
     int res;
-   
+    
+
     Triplets triplet;
 
     mq_close(q_client);
@@ -40,7 +41,7 @@ int init()
     attributes_c.mq_msgsize = sizeof(int);
 
 
-    if ((q_client = mq_open(CLIENT_QUEUE, O_CREAT|O_RDONLY, 0777, &attributes_c))==-1)
+    if ((q_client = mq_open(CLIENT_QUEUE, O_CREAT|O_RDWR, 0777, &attributes_c))==-1)
     {
       printf("AAA Error mq_open\n");
       exit(-1);
@@ -138,8 +139,8 @@ int get_value(char* key, char *value1, float *value2)
   attributes_s.mq_msgsize = sizeof(triplet);
 
   strcpy( triplet.key, key);
-  strcpy( triplet.value1, value1); 
-  triplet.value2 = *value2;
+  //strcpy( triplet.value1, value1); 
+  //triplet.value2 = *value2;
   triplet.op_code = 3;
   strcpy( triplet.q_name, CLIENT_QUEUE);
 
@@ -159,7 +160,7 @@ int get_value(char* key, char *value1, float *value2)
       exit(-1);
     } else
     {
-      printf("SERVER QUEUE OPENED (CLIENT SIDE_3)\n");
+      printf("CLIENT QUEUE OPENED (CLIENT SIDE_3)\n");
     }
 
      if (mq_send(q_server, (const char *) &triplet, sizeof(Triplets), 0)== -1)
@@ -186,6 +187,8 @@ int get_value(char* key, char *value1, float *value2)
 
     }
 
+
+      mq_close(q_client);
       mq_close(q_server);
                
 
@@ -201,18 +204,131 @@ int modify_value(char* key, char *value1, float *value2)
 int delete_key(char* key)
 {
   // RECEIVE and set to null
+
     return 0;
 }
 
 int exist(char* key)
 {
-    //  int mq_getattr (mqd_t mqdes, struct mq_attr *qstat)
-    // 0 yes exist -1 no
+    Triplets triplet;
+
+    attributes_s.mq_maxmsg  = MAX_MESSAGES;
+    attributes_s.mq_msgsize = sizeof(triplet);
+    strcpy( triplet.key, key);
+    strcpy( triplet.q_name, CLIENT_QUEUE);
+    triplet.op_code = 6;
+
+    int exists;
+
+    if ((q_server = mq_open(SERVER_QUEUE, O_WRONLY, 0777, &attributes_s))==-1)
+    {
+      perror(" BBB Error mq_open\n");
+      exit(-1);
+    } else
+    {
+      printf("SERVER QUEUE OPENED (CLIENT SIDE_2)\n");
+    }
+ 
+   if ((q_client = mq_open(CLIENT_QUEUE, O_RDONLY, 0777, &attributes_s))==-1)
+    {
+      perror(" GGG Error mq_open\n");
+      exit(-1);
+    } else
+    {
+      printf("CLIENT QUEUE OPENED (CLIENT SIDE_3)\n");
+    }
+
+     if (mq_send(q_server, (const char *) &triplet, sizeof(Triplets), 0)== -1)
+    {
+      perror("mq_send");
+       
+      mq_close(q_server);
+      exit(1);
+    } else
+    {
+      printf("MESSAGE SENT FROM CLIENT TO SERVER (CLIENT SIDE_3)\n");
+    }
+
+    if((mq_receive(q_client, (char *) &exists, sizeof(int), 0)==-1))
+    {
+          perror("ERROR (CLIENT SIDE_6) -> mq_receive");
+          mq_close(q_client);
+          exit(1);
+    } else
+    {
+      if(exists == 1)
+      {
+        printf("ELEMENT EXISTS\n");
+      } else 
+      {
+        printf("ELEMENT DOESN'T EXIST\n");
+      }
+      
+    }
+
+
+      mq_close(q_client);
+      mq_close(q_server);
+
     return 0;
 }
 
 int num_items()
 {
+
+
+    Triplets triplet;
+
+    attributes_s.mq_maxmsg  = MAX_MESSAGES;
+    attributes_s.mq_msgsize = sizeof(triplet);
+    strcpy( triplet.q_name, CLIENT_QUEUE);
+    triplet.op_code = 7;
+
+    int count;
+
+    if ((q_server = mq_open(SERVER_QUEUE, O_WRONLY, 0777, &attributes_s))==-1)
+    {
+      perror(" BBB Error mq_open\n");
+      exit(-1);
+    } else
+    {
+      printf("SERVER QUEUE OPENED (CLIENT SIDE_2)\n");
+    }
+ 
+   if ((q_client = mq_open(CLIENT_QUEUE, O_RDONLY, 0777, &attributes_s))==-1)
+    {
+      perror(" GGG Error mq_open\n");
+      exit(-1);
+    } else
+    {
+      printf("CLIENT QUEUE OPENED (CLIENT SIDE_3)\n");
+    }
+
+     if (mq_send(q_server, (const char *) &triplet, sizeof(Triplets), 0)== -1)
+    {
+      perror("mq_send");
+       
+      mq_close(q_server);
+      exit(1);
+    } else
+    {
+      printf("MESSAGE SENT FROM CLIENT TO SERVER (CLIENT SIDE_3)\n");
+    }
+
+    if((mq_receive(q_client, (char *) &count, sizeof(int), 0)==-1))
+    {
+          perror("ERROR (CLIENT SIDE_3) -> mq_receive");
+          mq_close(q_client);
+          exit(1);
+    } else
+    {
+      printf("NUMBER OF ELEMENTS IN QUEUE : %d\n", count );
+    }
+
+
+      mq_close(q_client);
+      mq_close(q_server);
+
 
     return 0;
 }

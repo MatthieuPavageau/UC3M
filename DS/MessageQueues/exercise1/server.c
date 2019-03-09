@@ -16,17 +16,17 @@ void process_message(Triplets *triplets){
 
     pthread_mutex_lock(&mutex_switch);
     switch(triplet.op_code){
-				case 1:{
+				case 1:{ // init
 						printf("SYSTEM INITIALIZATION ... \n");
 						answers.result = 0;
-						deleteLinkedList();
-						createLinkedList();
+						deleteLinkedList(); // we delete the previous data structure with triplets
+						createLinkedList(); // we create a new linked list to store the triplets
 						printf("SYSTEM INITIALIZED\n");
 						break;
 				}
 
-				case 2:{
-						if(addNode(triplet.key, triplet.value1, triplet.value2) == -1){
+				case 2:{ // set
+						if(addNode(triplet.key, triplet.value1, triplet.value2) == -1){ // if the triplet already exists
 								answers.result = -1;
 								printf("The key already exists\n");
 						}else{
@@ -36,22 +36,24 @@ void process_message(Triplets *triplets){
 						break;
 				}
 
-				case 3:{
+				case 3:{ // get
 						Node elem = getNode(triplet.key);
-						if (elem == NULL){
+						if (elem == NULL){ // if the triplet doesn't exist
 								printf("ERROR ... \n");
 								answers.result = -1;
 						}
-						else{
+						else{ // return the values of the triplet
 								strcpy (answers.value1, elem->value1);
 								answers.value2 = elem->value2;
 								answers.result = 0;
+								printf ("Get the node : %s - %s - %f\n", elem->key, elem->value1, elem->value2);
+					
 						}
 						break;
 				}
 
-				case 4:{
-						if(modifyNode(triplet.key, triplet.value1, triplet.value2) == -1){
+				case 4:{ // modify
+						if(modifyNode(triplet.key, triplet.value1, triplet.value2) == -1){ // if the triplet doesn't exist
 								answers.result = -1;
 						} else{
 								answers.result = 0;
@@ -59,8 +61,8 @@ void process_message(Triplets *triplets){
 						break;
 				}
 
-				case 5:{
-						if (deleteNode(triplet.key) == -1){
+				case 5:{ // delete
+						if (deleteNode(triplet.key) == -1){ // if the triplet doesn't exist
 								answers.result = -1;
 						} else{
 								answers.result = 0;
@@ -68,18 +70,18 @@ void process_message(Triplets *triplets){
 						break;
 				}
 
-				case 6:{
+				case 6:{ // exist
 						Node elem = getNode(triplet.key);
-						if(elem != NULL){
+						if(elem != NULL){ // if the triplet exists
 								answers.result = 0;
-						} else{
+						} else{ // if the triplet doesn't exist
 								answers.result = -1;
 						}
 						break;
 				}
 
-				case 7:{
-						answers.result = getSize();
+				case 7:{ // num_items
+						answers.result = getSize(); // return the size of the linked list
 						break;
 				}
     }
@@ -123,7 +125,6 @@ int main(void){
         	  printf("KEY RECEIVED AT SERVER SIDE            : %s\n",triplet.key);
         	  printf("VALUE 1 RECEIVED AT SERVER SIDE        : %s\n",triplet.value1);
         	  printf("VALUE 2 RECEIVED AT SERVER SIDE        : %f\n",triplet.value2);
-						printf("QUEUE NAME RECEIVED AT SERVER SIDE     : %s\n",triplet.q_name);
 						printf("OPERATION CODE RECEIVED AT SERVER SIDE : %d\n",triplet.op_code);
 						printf("------------------------------------------------------\n");
         }

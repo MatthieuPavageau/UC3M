@@ -12,7 +12,7 @@ int main(){
         printf("OPTION 4 : modify value\n"); 
         printf("OPTION 5 : delete key\n"); 
         printf("OPTION 6 : check if an element exist\n"); 
-        printf("OPTION 7 : get the number of elements in a queue\n"); 
+        printf("OPTION 7 : get the number of elements\n"); 
         printf("OPTION 8 : exit program\n");
         printf("                  \n");
         printf("Enter your choice:\n"); 

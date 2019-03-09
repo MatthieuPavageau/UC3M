@@ -91,13 +91,15 @@ int get_value(char* key, char *value1, float *value2){
         perror("ERROR (CLIENT SIDE_3) -> mq_receive");
         mq_close(q_client);
         exit(-1);
-    } else{
+    } else if(answer.result == 0){
         strcpy(value1, answer.value1);
         *value2 = answer.value2;
         printf("RECEIVED KEY %s\n", key);
         printf("RECEIVED VALUE_1 %s\n", value1);
         printf("RECEIVED VALUE_2 %f\n", *value2);
-    }
+    } else{
+        printf("Key doesn't exist\n");
+    } 
 
     return 0;
 }
